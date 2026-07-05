@@ -1,18 +1,14 @@
-BAD_WORDS = [
-    "spam",
-    "scam",
-    "idiot",
-    "fuck"
-]
+If topic == Discussions:
+    Everyone can send messages.
 
-async def check_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text.lower()
+If topic == Tasks:
+    If sender is not admin:
+        Delete the message.
 
-    for word in BAD_WORDS:
-        if word in text:
-            await update.message.delete()
+If topic == Lectures:
+    If sender is not admin:
+        Delete the message.
 
-            await update.effective_chat.send_message(
-                f"⚠️ {update.effective_user.first_name}, inappropriate language is not allowed."
-            )
-            return
+If topic == Dates and time:
+    If sender is not admin:
+        Delete the message.
