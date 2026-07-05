@@ -1,41 +1,18 @@
-import os
-
-from telegram import Update
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    ContextTypes,
-    filters,
-)
-
-TOKEN = os.environ["BOT_TOKEN"]
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("✅ Moderator Bot is online!")
-
-
-async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🏓 Pong!")
-
+BAD_WORDS = [
+    "spam",
+    "scam",
+    "idiot",
+    "fuck"
+]
 
 async def check_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print(update.message.text)
+    text = update.message.text.lower()
 
-    await update.message.reply_text(
-        f"You wrote:\n{update.message.text}"
-    )
+    for word in BAD_WORDS:
+        if word in text:
+            await update.message.delete()
 
-
-app = Application.builder().token(TOKEN).build()
-
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("ping", ping))
-
-app.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, check_message)
-)
-
-print("Bot started...")
-app.run_polling()
+            await update.effective_chat.send_message(
+                f"⚠️ {update.effective_user.first_name}, inappropriate language is not allowed."
+            )
+            return
