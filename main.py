@@ -1,23 +1,41 @@
 import os
+
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    ContextTypes,
+    filters,
+)
 
 TOKEN = os.environ["BOT_TOKEN"]
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("✅ Bot is online and working!")
+    await update.message.reply_text("✅ Moderator Bot is online!")
+
 
 async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🏓 Pong!")
 
-def main():
-    app = Application.builder().token(TOKEN).build()
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("ping", ping))
+async def check_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(update.message.text)
 
-    print("Bot started...")
-    app.run_polling()
+    await update.message.reply_text(
+        f"You wrote:\n{update.message.text}"
+    )
 
-if __name__ == "__main__":
-    main()
+
+app = Application.builder().token(TOKEN).build()
+
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("ping", ping))
+
+app.add_handler(
+    MessageHandler(filters.TEXT & ~filters.COMMAND, check_message)
+)
+
+print("Bot started...")
+app.run_polling()
